@@ -8,7 +8,7 @@ ENV DISPLAY=:1
 RUN apt-get update && apt-get install -y \
     xfce4 \
     xfce4-terminal \
-    tigervnc-server \
+    tigervnc-standalone-server \
     tigervnc-common \
     novnc \
     websockify \
