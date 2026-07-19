@@ -8,4 +8,4 @@ su vncuser -c "echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?><channel name=\"x
 su vncuser -c "vncserver -geometry 1280x720 -depth 24 -localhost no :1"
 
 # 2. 启动 noVNC 
-websockify --web=/usr/share/novnc 6080 localhost:5900
+websockify --web=/usr/share/novnc 6080 localhost:5901
