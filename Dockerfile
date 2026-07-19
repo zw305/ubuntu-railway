@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV VNC_PASSWORD=password123
 ENV DISPLAY=:1
 
-# 仅安装核心的桌面、VNC 和 noVNC
+# 安装桌面、VNC、noVNC，并顺便卸载可能导致锁屏的组件
 RUN apt-get update && apt-get install -y \
     xfce4 \
     xfce4-terminal \
@@ -14,10 +14,12 @@ RUN apt-get update && apt-get install -y \
     websockify \
     wget \
     curl \
+    && apt-get remove -y light-locker xfce4-screensaver \
     && rm -rf /var/lib/apt/lists/*
 
-# 创建运行用户
-RUN useradd -m -s /bin/bash vncuser
+# 创建运行用户并设置系统密码（让系统密码也等于 password123）
+RUN useradd -m -s /bin/bash vncuser && \
+    echo "vncuser:password123" | chpasswd
 
 WORKDIR /home/vncuser
 
