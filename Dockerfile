@@ -73,4 +73,4 @@ EXPOSE 5901
 EXPOSE 6080
 
 
-CMD ["/start.sh"]
+CMD ["/start-vnc.sh"]
