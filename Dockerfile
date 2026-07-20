@@ -56,9 +56,14 @@ RUN mkdir -p /root/.vnc \
 
 
 # 复制启动脚本
-COPY start.sh /start.sh
+# COPY start.sh /start.sh
 
-RUN chmod +x /start.sh
+# RUN chmod +x /start.sh
+COPY start-vnc.sh /start-vnc.sh
+
+RUN chmod +x /start-vnc.sh
+
+CMD ["/start-vnc.sh"]
 
 
 # VNC端口
