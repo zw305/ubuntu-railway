@@ -1,38 +1,71 @@
-FROM ubuntu:22.04
+FROM --platform=linux/amd64 ubuntu:22.04
 
+
+# 防止安装软件时交互询问
 ENV DEBIAN_FRONTEND=noninteractive
-ENV VNC_PASSWORD=password123
-ENV DISPLAY=:1
 
-# 安装桌面、VNC、noVNC，并顺便卸载可能导致锁屏的组件
-RUN apt-get update && apt-get install -y \
+# 设置时区
+ENV TZ=Asia/Shanghai
+
+
+# 安装桌面、VNC、浏览器、工具
+RUN apt update && apt install -y \
     xfce4 \
-    xfce4-terminal \
+    xfce4-goodies \
     tigervnc-standalone-server \
-    tigervnc-common \
     novnc \
     websockify \
-    wget \
+    dbus-x11 \
+    x11-utils \
+    x11-xserver-utils \
+    x11-apps \
+    sudo \
+    xterm \
+    vim \
+    net-tools \
     curl \
-    && apt-get remove -y light-locker xfce4-screensaver \
+    wget \
+    git \
+    tzdata \
+    software-properties-common \
+    openssl \
     && rm -rf /var/lib/apt/lists/*
 
-# 创建运行用户并设置系统密码（让系统密码也等于 password123）
-RUN useradd -m -s /bin/bash vncuser && \
-    echo "vncuser:password123" | chpasswd
 
-WORKDIR /home/vncuser
+# 添加 Firefox 官方源
+RUN add-apt-repository ppa:mozillateam/ppa -y \
+    && echo 'Package: *' > /etc/apt/preferences.d/mozilla-firefox \
+    && echo 'Pin: release o=LP-PPA-mozillateam' >> /etc/apt/preferences.d/mozilla-firefox \
+    && echo 'Pin-Priority: 1001' >> /etc/apt/preferences.d/mozilla-firefox
 
-# 配置 VNC 密码
-RUN mkdir -p /home/vncuser/.vnc && \
-    echo "${VNC_PASSWORD}" | vncpasswd -f > /home/vncuser/.vnc/passwd && \
-    chmod 600 /home/vncuser/.vnc/passwd && \
-    chown -R vncuser:vncuser /home/vncuser
 
-COPY start-vnc.sh /home/vncuser/start-vnc.sh
-RUN chmod +x /home/vncuser/start-vnc.sh
+# 安装 Firefox
+RUN apt update \
+    && apt install -y firefox xubuntu-icon-theme \
+    && rm -rf /var/lib/apt/lists/*
 
-# 暴露 noVNC 的默认端口
+
+# 创建X认证文件
+RUN touch /root/.Xauthority
+
+
+# 创建VNC密码
+RUN mkdir -p /root/.vnc \
+    && echo "docker123" | vncpasswd -f > /root/.vnc/passwd \
+    && chmod 600 /root/.vnc/passwd
+
+
+# 复制启动脚本
+COPY start.sh /start.sh
+
+RUN chmod +x /start.sh
+
+
+# VNC端口
+EXPOSE 5901
+
+# noVNC网页端口
 EXPOSE 6080
 
-CMD ["/home/vncuser/start-vnc.sh"]
+
+CMD ["/start.sh"]
