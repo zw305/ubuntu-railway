@@ -63,7 +63,7 @@ COPY start-vnc.sh /start-vnc.sh
 
 RUN chmod +x /start-vnc.sh
 
-CMD ["/start-vnc.sh"]
+# CMD ["/start-vnc.sh"]
 
 
 # VNC端口
